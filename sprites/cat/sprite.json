@@ -1,0 +1,11 @@
+{
+    "name": "cat",
+    "x": 0,
+    "y": 0,
+    "size": 100,
+    "angle": 90,
+    "code": [
+        "cat.js",
+        "test.js"
+    ]    
+}
