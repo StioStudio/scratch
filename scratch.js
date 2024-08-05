@@ -11,16 +11,6 @@ let spritesJSON = []
 const greenFlag = document.querySelector(scriptElm.getAttribute('green-flag'))
 const stopAll = document.querySelector(scriptElm.getAttribute('stop-all'))
 
-new Promise(async (resolve, reject) => {
-    resolve(await (await fetch(`${spritesPath}sprites.json`)).json())
-}).then(async (json) => {
-    json.forEach(async (id) => {
-        const spriteJSON = await (await fetch(`./${spritesPath}${id}/sprite.json`)).json()
-        spriteJSON.id = id
-        __runSprite__(spriteJSON)
-    })
-})
-
 function __runSprite__(spriteJSON) {
     spritesJSON.push(spriteJSON)
     spriteJSON.code.forEach(async (codePath) => {
@@ -36,16 +26,20 @@ async function __runSpriteCode__(codePath) {
 
 // Sprites
 __alreadyDownloaded__ = []
-async function downloadExtension(extensionName) {
-    if (__alreadyDownloaded__.includes(extensionName)) return
-    const extensionJSON = await (await fetch(`${extensionPath}${extensionName}/extension.json`)).json()
-    extensionJSON.code.forEach(async (codePath) => {
-        const module = await import(`./${extensionPath}${extensionName}/${codePath}`)
-        Object.keys(module).forEach(key => {
-            window[key] = module[key]
+function downloadExtension(extensionName) {
+    return new Promise(async (resolve, reject) => {
+        if (__alreadyDownloaded__.includes(extensionName)) return
+        const extensionJSON = await (await fetch(`${extensionPath}${extensionName}/extension.json`)).json()
+        const extensionPaths = extensionJSON.code.map((codePath)=>{return `./${extensionPath}${extensionName}/${codePath}`})
+        const modules = await Promise.all(extensionPaths.map((v, i)=>{return import(v)}))
+        modules.forEach(module => {
+            Object.keys(module).forEach(key => {
+                window[key] = module[key]
+            })
         })
+        __alreadyDownloaded__.push(extensionName)
+        resolve()
     })
-    __alreadyDownloaded__.push(extensionName)
 }
 
 function getMeById(id) {
@@ -67,3 +61,15 @@ downloadExtension("Operators")
 // Variable/list will be in var me
 
 // Function is unneeded
+
+
+// Start sprites
+new Promise(async (resolve, reject) => {
+    resolve(await (await fetch(`${spritesPath}sprites.json`)).json())
+}).then(async (json) => {
+    json.forEach(async (id) => {
+        const spriteJSON = await (await fetch(`./${spritesPath}${id}/sprite.json`)).json()
+        spriteJSON.id = id
+        __runSprite__(spriteJSON)
+    })
+})
