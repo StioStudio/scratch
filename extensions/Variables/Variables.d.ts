@@ -1,0 +1,1 @@
+declare function variable(name: string): void;

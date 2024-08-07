@@ -1,4 +1,4 @@
-export function askAndWait(question) { }
+export function askAndWait(me, question) { }
 export let answer = ""
 
 const __keyPressedArray__ = {}
@@ -22,7 +22,7 @@ function __update__() {
 }
 __update__()
 
-export function keyPressed(key) {
+export function keyPressed(me, key) {
     return Object.keys(__keyPressedArray__).includes(key)
 }
 

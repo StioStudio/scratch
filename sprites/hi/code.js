@@ -1,7 +1,7 @@
 // let me = getMeById("hi")
 // me.addExtension(await me.downloadExtension("Controls"))
-// console.log(me)
 
+// console.log(me)
 variable("a")
 variable("b")
 
@@ -12,8 +12,11 @@ when(() => a > b, () => {
     console.log("a > b")
 }, { once: true })
 
-repeat(12, () => {
+forever
+forever(async () => {
     a++
+    console.log(a)
+    await wait(0.5)
 })
 
 // Object.defineProperty(window, "hello", {

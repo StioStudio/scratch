@@ -1,5 +1,7 @@
 const scriptElm = document.currentScript
 const canvasSelector = scriptElm.getAttribute('canvas')
+
+/**@type {HTMLCanvasElement}*/
 const canvas = document.querySelector(canvasSelector)
 const ctx = canvas.getContext('2d')
 const spritesPath = pathFixer(scriptElm.getAttribute('sprites'))
@@ -12,7 +14,6 @@ const greenFlag = document.querySelector(scriptElm.getAttribute('green-flag'))
 const stopAll = document.querySelector(scriptElm.getAttribute('stop-all'))
 
 function __runSprite__(spriteJSON) {
-    spritesJSON.push(spriteJSON)
     spriteJSON.code.forEach(async (codePath) => {
         __runSpriteCode__(`./${spritesPath}${spriteJSON.id}/${codePath}`)
     })
@@ -39,8 +40,9 @@ function downloadExtension(extensionName, me = window) {
         const obj = {}
         modules.forEach(module => {
             Object.keys(module).forEach(key => {
-                window[key] = (...e) => { module[key](me, ...e) }
-                obj[key] = (...e) => { module[key](me, ...e) }
+                const func = (...e) => { return module[key](me, ...e) }
+                window[key] = func
+                obj[key] = func
             })
         })
         __alreadyDownloaded__[extensionName] = obj
@@ -85,31 +87,50 @@ function getMeById(id) {
     return new Sprite(spritesJSON.find((sprite) => sprite.id == id))
 }
 
-// Events
-downloadExtension("Events")
+function __Costumes__(spriteJSON) {
+    spriteJSON.costumes.forEach((costume) => {
+        const img = new Image(costume.width, costume.height)
+        console.log(spriteJSON)
+        img.src = `./${spritesPath}${spriteJSON.id}/${costume.path}`
+        img.addEventListener("load", () => {
+            ctx.fillRect(100, 100, costume.width, costume.height)
+            ctx.drawImage(img, 100, 100, costume.width, costume.height)
+        })
+    })
 
-// Controls
-downloadExtension("Controls")
+}
 
-// Sensing
-downloadExtension("Sensing")
+Promise.all([
+    // Events
+    downloadExtension("Events"),
 
-// Operators
-downloadExtension("Operators")
+    // Controls
+    downloadExtension("Controls"),
 
-// Variable/list will be in var me
-downloadExtension("Variables")
+    // Sensing
+    downloadExtension("Sensing"),
 
-// Function is unneeded
+    // Operators
+    downloadExtension("Operators"),
 
+    // Variable/list will be in var me
+    downloadExtension("Variables"),
 
-// Start sprites
-new Promise(async (resolve, reject) => {
-    resolve(await (await fetch(`${spritesPath}sprites.json`)).json())
-}).then(async (json) => {
-    json.forEach(async (id) => {
-        const spriteJSON = await (await fetch(`./${spritesPath}${id}/sprite.json`)).json()
-        spriteJSON.id = id
-        __runSprite__(spriteJSON)
+    // Function is unneeded
+]).then(() => {
+    whenGreenFlagClicked(() => {
+        // Start sprites
+        new Promise(async (resolve, reject) => {
+            resolve(await (await fetch(`${spritesPath}sprites.json`)).json())
+        }).then(async (json) => {
+            json.forEach(async (id) => {
+                const spriteJSON = await (await fetch(`./${spritesPath}${id}/sprite.json`)).json()
+                spriteJSON.id = id
+                spritesJSON.push(spriteJSON)
+                __runSprite__(spriteJSON)
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                await __Costumes__(spriteJSON)
+            })
+        })
     })
 })

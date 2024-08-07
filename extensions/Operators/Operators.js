@@ -1,77 +1,77 @@
-export function pickRandom(from, to) {
+export function pickRandom(me, from, to) {
     const max = Math.max(from, to)
     const min = Math.min(from, to)
     return Math.random() * (max - min) + min
 }
 
-export function join(a, b) {
+export function join(me, a, b) {
     return String(a) + String(b)
 }
 
-export function letterOf(index, value) {
+export function letterOf(me, index, value) {
     return value[index]
 }
 
-export function lengthOf(value) {
+export function lengthOf(me, value) {
     return value.length
 }
 
-export function thingContains(thing, contains) {
+export function thingContains(me, thing, contains) {
     return thing.includes(contains)
 }
 
-export function mod(a, b) {
+export function mod(me, a, b) {
     return a % b
 }
 
-export function round(value) {
+export function round(me, value) {
     return Math.round(value)
 }
 
-export function abs(value) {
+export function abs(me, value) {
     return Math.abs(value)
 } 
 
-export function floor(value) {
+export function floor(me, value) {
     return Math.floor(value)
 }
 
-export function ceiling(value) {
+export function ceiling(me, value) {
     return Math.ceil(value)
 }
 
-export function sqrt(value) {
+export function sqrt(me, value) {
     return Math.sqrt(value)
 }
 
-export function sin(value) {
+export function sin(me, value) {
     return Math.sin(value * Math.PI / 180)
 }
 
-export function cos(value) {
+export function cos(me, value) {
     return Math.cos(value * Math.PI / 180)
 }
 
-export function tan(value) {
+export function tan(me, value) {
     return Math.tan(value * Math.PI / 180)
 }
 
-export function asin(value) {
+export function asin(me, value) {
     return Math.asin(value) * 180 / Math.PI
 }
 
-export function acos(value) {
+export function acos(me, value) {
     return Math.acos(value) * 180 / Math.PI
 }
 
-export function atan(value) {
+export function atan(me, value) {
     return Math.atan(value) * 180 / Math.PI
 }
 
-export function ln(value) {
+export function ln(me, value) {
     return Math.log(value)
 }
 
-export function log(value) {
+export function log(me, value) {
     return Math.log10(value)
 }

@@ -1,7 +1,7 @@
 export function activeGamepads() {
     return navigator.getGamepads().filter(pad => pad !== null)
 }
-export function gamepadconnected(callback, { waitForTotal = 1 } = {}) {
+export function gamepadconnected(me, callback, { waitForTotal = 1 } = {}) {
     return new Promise((resolve, reject) => {
         var i = 0
         addEventListener("gamepadconnected", (...e) => {
@@ -37,7 +37,7 @@ const mapping = {
     }
 }
 
-export function getGamepadById(id) {
+export function getGamepadById(me, id) {
     return navigator.getGamepads()[id]
 }
 
@@ -46,7 +46,7 @@ export class gamepad {
     get #gamepad() {
         return getGamepadById(this.#index)
     }
-    constructor(type, index) {
+    constructor(me, type, index) {
         this.#index = index
         type = Object.keys(mapping).find((key) => { return key == type })
         // console.log(type, index, getGamepadById(index), mapping[type])

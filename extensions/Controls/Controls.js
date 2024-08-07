@@ -31,7 +31,7 @@ export async function forever(me, callback, { _waitFrames = true, _condition = (
     var i = 0
     while (_condition(i)) {
         await callback(i)
-        await waitFrames(_waitFrames)
+        await waitFrames(me, _waitFrames)
         i++
     }
 }
