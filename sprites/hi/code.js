@@ -1,7 +1,26 @@
-await downloadExtension("Gamepad")
+// let me = getMeById("hi")
+// me.addExtension(await me.downloadExtension("Controls"))
+// console.log(me)
 
-await gamepadconnected()
+variable("a")
+variable("b")
 
-forever(()=>{
-    console.log(navigator.getGamepads()[0].buttons[0].value)
-}, {_waitFrames: 10})
+a = 0
+b = 10
+
+when(() => a > b, () => {
+    console.log("a > b")
+}, { once: true })
+
+repeat(12, () => {
+    a++
+})
+
+// Object.defineProperty(window, "hello", {
+//     get: () => {
+//         console.log("wow")
+//         return "hello"
+//     }
+// })
+
+// console.log(hello)

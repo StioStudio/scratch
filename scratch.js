@@ -25,25 +25,64 @@ async function __runSpriteCode__(codePath) {
 }
 
 // Sprites
-__alreadyDownloaded__ = []
-function downloadExtension(extensionName) {
+__alreadyDownloaded__ = {}
+function downloadExtension(extensionName, me = window) {
     return new Promise(async (resolve, reject) => {
-        if (__alreadyDownloaded__.includes(extensionName)) return
+        if (__alreadyDownloaded__[extensionName]) {
+            resolve(__alreadyDownloaded__[extensionName])
+            return
+        }
         const extensionJSON = await (await fetch(`${extensionPath}${extensionName}/extension.json`)).json()
-        const extensionPaths = extensionJSON.code.map((codePath)=>{return `./${extensionPath}${extensionName}/${codePath}`})
-        const modules = await Promise.all(extensionPaths.map((v, i)=>{return import(v)}))
+        const extensionPaths = extensionJSON.code.map((codePath) => { return `./${extensionPath}${extensionName}/${codePath}` })
+        const modules = await Promise.all(extensionPaths.map((v, i) => { return import(v) }))
+
+        const obj = {}
         modules.forEach(module => {
             Object.keys(module).forEach(key => {
-                window[key] = module[key]
+                window[key] = (...e) => { module[key](me, ...e) }
+                obj[key] = (...e) => { module[key](me, ...e) }
             })
         })
-        __alreadyDownloaded__.push(extensionName)
-        resolve()
+        __alreadyDownloaded__[extensionName] = obj
+        resolve(obj)
     })
 }
 
+class Sprite {
+    constructor(spriteJSON) {
+        Object.keys(spriteJSON).forEach((key, i) => {
+            this[key] = spriteJSON[key]
+        })
+        // Events
+        downloadExtension("Events", this)
+
+        // Controls
+        downloadExtension("Controls", this)
+
+        // Sensing
+        downloadExtension("Sensing", this)
+
+        // Operators
+        downloadExtension("Operators", this)
+
+        // Variable/list will be in var me
+        downloadExtension("Variables", this)
+
+        // Function is unneeded
+
+    }
+    addExtension(extension) {
+        Object.keys(extension).forEach((key, i) => {
+            this[key] = extension[key]
+        })
+    }
+    downloadExtension(extensionName) {
+        return downloadExtension(extensionName, this)
+    }
+}
+
 function getMeById(id) {
-    return spritesJSON.find((sprite) => sprite.id == id)
+    return new Sprite(spritesJSON.find((sprite) => sprite.id == id))
 }
 
 // Events
@@ -59,6 +98,7 @@ downloadExtension("Sensing")
 downloadExtension("Operators")
 
 // Variable/list will be in var me
+downloadExtension("Variables")
 
 // Function is unneeded
 

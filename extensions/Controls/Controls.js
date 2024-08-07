@@ -1,4 +1,4 @@
-export function wait(seconds) {
+export function wait(me, seconds) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve()
@@ -6,7 +6,7 @@ export function wait(seconds) {
     })
 }
 
-export function waitFrames(_frames) {
+export function waitFrames(me, _frames) {
     return new Promise((resolve, reject) => {
         var i = 1
         function update() {
@@ -21,13 +21,13 @@ export function waitFrames(_frames) {
     })
 }
 
-export async function repeat(times, callback) {
+export async function repeat(me, times, callback) {
     for (let i = 0; i < times; i++) {
         await callback(i)
     }
 }
 
-export async function forever(callback, { _waitFrames = true, _condition = () => true } = {}) {
+export async function forever(me, callback, { _waitFrames = true, _condition = () => true } = {}) {
     var i = 0
     while (_condition(i)) {
         await callback(i)
@@ -36,14 +36,24 @@ export async function forever(callback, { _waitFrames = true, _condition = () =>
     }
 }
 
-export function waitUntil(condition) {
+export function waitUntil(me, condition) {
 
 }
 
-export async function repeatUntil(condition, callback) {
+export async function repeatUntil(me, condition, callback) {
     var i = 0
     while (condition(i)) {
         await callback(i)
         i++
     }
+}
+
+export function when(me, condition, callback, { once = false } = {}) {
+    const index = me.variableCallbacksSet.length
+    me.variableCallbacksSet.push(()=>{
+        if(condition()) {
+            callback()
+            if(once) me.variableCallbacksSet.splice(index, 1)
+        }
+    })
 }
